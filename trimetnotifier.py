@@ -1,13 +1,24 @@
 from flask import Flask
+from flask.ext.mail import Mail
 from datetime import datetime
-#from flaskext.mail import Mail
+from flask_mail import Message
 import urllib, time, pytz
 import urllib2, base64
 import credentials, json
 
 
+
+MAIL_SERVER = credentials.MAIL_SERVER
+MAIL_PORT = credentials.MAIL_PORT
+MAIL_USE_TLS = credentials.MAIL_USE_TLS
+MAIL_USE_SSL =  credentials.MAIL_USE_SSL
+MAIL_USERNAME = credentials.MAIL_USERNAME
+MAIL_PASSWORD = credentials.MAIL_PASSWORD
+
 app = Flask(__name__)
-#mail = Mail(app)
+app.config.from_object(__name__)
+mail = Mail(app)
+
 
 #https://dev.twitter.com/docs/auth/application-only-auth
 
@@ -23,6 +34,7 @@ def checktrimetstatus():
     response = urllib2.urlopen(req)
     data = response.read()   
     problems =  checkForProblems(data)
+    sendEmail(problems)
     return '<br/>'.join(problems)
 
 
@@ -42,6 +54,13 @@ def checkForProblems(data):
                 problems.append('At : ' + str(created_at.hour) + ':' + str(created_at.minute) +  ', ' + text)
     return problems;
 
+
+def sendEmail(problems):
+     msg = Message("Trimet problems",
+                  sender="balaji@balajiathreya.com",
+                  recipients=["athreya86@gmail.com"])
+     msg.html = '<br/>'.join(problems)
+     mail.send(msg)
 
 def getBearerToken():
     return credentials.bearertoken
