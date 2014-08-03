@@ -57,7 +57,7 @@ def checkForProblems(data):
 
 def sendEmail(problems):
      msg = Message("Trimet problems",
-                  sender="balaji@balajiathreya.com",
+                  sender=MAIL_USERNAME,
                   recipients=["athreya86@gmail.com"])
      msg.html = '<br/>'.join(problems)
      mail.send(msg)
