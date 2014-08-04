@@ -34,7 +34,7 @@ def hello():
 
 # functions for /getdashboard
 @app.route('/getdashboard')
-@crossdomain(origin='http://trimet.balajiathreya.com')
+@crossdomain(origin='*')
 def getdashboard():
     locationids = '1003,1114,9978,10168'
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
