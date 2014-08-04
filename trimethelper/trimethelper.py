@@ -6,7 +6,7 @@ from crossdomain import crossdomain
 import urllib, time, pytz
 import urllib2, base64
 import credentials, json
-
+import os.path
 
 
 TWITTER_APIKEY=credentials.twitterapikey
@@ -66,13 +66,13 @@ def checktrimetstatus():
     headers = {'Authorization':authorization}
     url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=trimet'
 
-    #response = urllib2.urlopen("http://example.com/foo/bar").read()
     req = urllib2.Request(url, None, headers)
     response = urllib2.urlopen(req)
     data = response.read()   
     problems =  checkForProblems(data)
-    sendEmail(problems)
-    return '<br/>'.join(problems)
+    problemsStr = str('<br/>'.join(problems))
+    sendEmail(problemsStr)
+    return problemsStr
 
 
 def checkForProblems(data):
@@ -92,12 +92,27 @@ def checkForProblems(data):
     return problems;
 
 
-def sendEmail(problems):
-     msg = Message("Trimet problems",
+def sendEmail(problemsStr):
+    fname = 'problems.txt'
+    sendMail = False
+    if(not os.path.isfile(fname)):
+        sendMail = True
+        with open(fname, 'w') as f:
+            f.write(problemsStr)
+        f.closed
+    else:
+        with open(fname,'r+') as f:
+            existingproblems = f.read()
+            if(existingproblems != problems):
+                sendMail = True
+                f.write(problemsStr)
+        f.closed
+    if(sendMail):
+        msg = Message("Trimet problems",
                   sender=MAIL_USERNAME,
                   recipients=["athreya86@gmail.com"])
-     msg.html = '<br/>'.join(problems)
-     mail.send(msg)
+        msg.html = problemsStr
+        mail.send(msg)
 
 def getBearerToken():
     return TWITTER_BEARERTOKEN
@@ -122,4 +137,4 @@ def getBearerTokenFromTwitter():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
