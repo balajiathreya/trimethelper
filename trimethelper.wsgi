@@ -2,6 +2,6 @@
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0,"/var/www/trimetnotifier/trimetnotifier/")
+sys.path.insert(0,"/var/www/trimethelper/trimethelper/")
 
-from trimetnotifier import app as application
+from trimethelper import app as application
