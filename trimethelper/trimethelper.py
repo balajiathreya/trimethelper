@@ -31,6 +31,7 @@ def hello():
     return "This server is a service. Please use the right path"
 
 
+# functions for /checktrimetstatus
 @app.route('/getdashboard')
 def getdashboard():
     locationids = '1003,1114,9978,10168'
@@ -39,10 +40,22 @@ def getdashboard():
     response = urllib2.urlopen(req)
     data = response.read()
     arrivals = json.loads(data)['resultSet']['arrival']
-    dashboard = "{ 'arrivals':"+ json.dumps(arrivals) +"}"
+    filtered = filterdashboarddata(arrivals)
+    dashboard = "{ 'arrivals':"+ json.dumps(filtered) +"}"
     return dashboard
 
+def filterdashboarddata(arrivals):
+    filtered = dict()
+    for arrival in arrivals:
+        locid = arrival['locid']        
+        if(not filtered.has_key(locid)):
+            filtered[locid] = list()
+        filtered[locid].append(arrival)
+    return filtered
 
+
+
+# functions for /checktrimetstatus
 #https://dev.twitter.com/docs/auth/application-only-auth
 @app.route("/checktrimetstatus")
 def checktrimetstatus():
@@ -104,5 +117,7 @@ def getBearerTokenFromTwitter():
     return tokenJSON['access_token']
 
 
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
