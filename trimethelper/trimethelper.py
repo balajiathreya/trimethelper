@@ -12,6 +12,8 @@ TWITTER_APIKEY=credentials.twitterapikey
 TWITTER_APISECRET=credentials.twitterapisecret
 TWITTER_BEARERTOKEN=credentials.twitterbearertoken
 
+TRIMET_APPID=credentials.trimetappid
+
 MAIL_SERVER = credentials.MAIL_SERVER
 MAIL_PORT = credentials.MAIL_PORT
 MAIL_USE_TLS = credentials.MAIL_USE_TLS
@@ -24,8 +26,19 @@ app.config.from_object(__name__)
 mail = Mail(app)
 
 
-#https://dev.twitter.com/docs/auth/application-only-auth
+@app.route('/getdashboard')
+def getdashboard():
+    locationids = '1003,1114,9978,10168'
+    url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
+    req = urllib2.Request(url)
+    response = urllib2.urlopen(req)
+    data = response.read()
+    arrivals = json.loads(data)['resultSet']['arrival']
+    dashboard = "{ 'arrivals':"+ json.dumps(arrivals) +"}"
+    return dashboard
 
+
+#https://dev.twitter.com/docs/auth/application-only-auth
 @app.route("/checktrimetstatus")
 def checktrimetstatus():
     bearerToken = getBearerToken()
@@ -87,4 +100,4 @@ def getBearerTokenFromTwitter():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
