@@ -31,7 +31,7 @@ def hello():
     return "This server is a service. Please use the right path"
 
 
-# functions for /checktrimetstatus
+# functions for /getdashboard
 @app.route('/getdashboard')
 def getdashboard():
     locationids = '1003,1114,9978,10168'
