@@ -3,7 +3,8 @@ from flask.ext.mail import Mail
 from datetime import datetime
 from flask_mail import Message
 from crossdomain import crossdomain
-import urllib, time, pytz
+from datetime import time
+import pytz
 import urllib2, base64
 import credentials, json
 import os.path
@@ -84,11 +85,11 @@ def checkForProblems(data):
         created_at_utc  = pytz.utc.localize(datetime.strptime(tweet['created_at'].replace('+0000 ',''), '%a %b %d %H:%M:%S %Y'))
         created_at = created_at_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('US/Pacific'))
         now = datetime.now(pytz.timezone('US/Pacific'))
-        diff_seconds = (now - created_at).seconds
-        # difference is less than 3 hours
-        if(diff_seconds < 10800):
-            if(text.find('delay') != -1 or text.find('close') != -1):
-                problems.append('At : ' + str(created_at.hour) + ':' + str(created_at.minute) +  ', ' + text)
+        diff_seconds = (now - created_at).total_seconds()
+        # difference is less than 2 hours
+        if(diff_seconds < 7200):
+            if(text.find('delay') != -1 or text.find('closed') != -1 or text.find('delayed') != -1 or text.find('disrupted') != -1):
+                problems.append('At '  + str(created_at) +  ', ' + text)
     return problems;
 
 
@@ -103,7 +104,7 @@ def sendEmail(problemsStr):
     else:
         with open(fname,'r+') as f:
             existingproblems = f.read()
-            if(existingproblems != problems):
+            if(existingproblems != problemsStr):
                 sendMail = True
                 f.write(problemsStr)
         f.closed
@@ -137,4 +138,4 @@ def getBearerTokenFromTwitter():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
