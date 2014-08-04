@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.mail import Mail
 from datetime import datetime
 from flask_mail import Message
+from crossdomain import crossdomain
 import urllib, time, pytz
 import urllib2, base64
 import credentials, json
@@ -33,6 +34,7 @@ def hello():
 
 # functions for /getdashboard
 @app.route('/getdashboard')
+@crossdomain(origin='http://trimet.balajiathreya.com')
 def getdashboard():
     locationids = '1003,1114,9978,10168'
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
