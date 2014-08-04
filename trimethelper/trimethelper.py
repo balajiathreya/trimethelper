@@ -8,6 +8,10 @@ import credentials, json
 
 
 
+TWITTER_APIKEY=credentials.twitterapikey
+TWITTER_APISECRET=credentials.twitterapisecret
+TWITTER_BEARERTOKEN=credentials.twitterbearertoken
+
 MAIL_SERVER = credentials.MAIL_SERVER
 MAIL_PORT = credentials.MAIL_PORT
 MAIL_USE_TLS = credentials.MAIL_USE_TLS
@@ -63,13 +67,13 @@ def sendEmail(problems):
      mail.send(msg)
 
 def getBearerToken():
-    return credentials.bearertoken
+    return TWITTER_BEARERTOKEN
 
 
 # bearer tokens don't change for now - but they may change in the future
 def getBearerTokenFromTwitter():
     # construct header first
-    basic = base64.b64encode(urllib.quote_plus(credentials.apikey) + ':' + urllib.quote_plus(credentials.apisecret))
+    basic = base64.b64encode(urllib.quote_plus(TWITTER_APIKEY) + ':' + urllib.quote_plus(TWITTER_APISECRET))
     authorization = 'Basic ' + basic
     contentType = 'application/x-www-form-urlencoded;charset=UTF-8'
     headers = {'Authorization':authorization, 'Content-Type':contentType}

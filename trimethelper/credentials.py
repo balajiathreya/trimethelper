@@ -2,9 +2,9 @@
 # also follow instructions https://dev.twitter.com/docs/auth/application-only-auth to create a bearertoken or use getBearerTokenFromTwitter 
 # function in trimetnotifier.py
 
-apikey=''
-apisecret=''
-bearertoken=''
+twitterapikey=''
+twitterapisecret=''
+twitterbearertoken=''
 
 
 MAIL_SERVER='smtp.gmail.com'
