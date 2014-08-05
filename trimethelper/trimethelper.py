@@ -94,26 +94,9 @@ def checkForProblems(data):
 
 
 def sendEmail(problemsStr):
-    fname = 'problems.txt'
-    sendMail = False
-    if(not os.path.isfile(fname)):
-        sendMail = True
-        with open(fname, 'w') as f:
-            f.write(problemsStr)
-        f.closed
-    else:
-        with open(fname,'r+') as f:
-            existingproblems = f.read()
-            if(existingproblems != problemsStr):
-                sendMail = True
-                f.write(problemsStr)
-        f.closed
-    if(sendMail):
-        msg = Message("Trimet problems",
-                  sender=MAIL_USERNAME,
-                  recipients=["athreya86@gmail.com"])
-        msg.html = problemsStr
-        mail.send(msg)
+    msg = Message("Trimet problems", sender=MAIL_USERNAME, recipients=["athreya86@gmail.com"])
+    msg.html = problemsStr
+    mail.send(msg)
 
 def getBearerToken():
     return TWITTER_BEARERTOKEN
