@@ -10,6 +10,7 @@ import credentials, json
 import os.path
 import sqlite3
 from flask import g
+from flask.ext.cors import CORS
 
 
 TWITTER_APIKEY=credentials.twitterapikey
@@ -28,7 +29,7 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
-
+cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}})
 
 DATABASE = '/var/www/trimethelper/resources/trimet.db'
 
@@ -40,7 +41,6 @@ def hello():
 
 # functions for /getdashboard
 @app.route('/getdashboard')
-@crossdomain(origin='*')
 def getdashboard():
     locationids = '1003,1114,9978,10168'
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
