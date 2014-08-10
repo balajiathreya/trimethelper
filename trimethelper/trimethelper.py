@@ -50,11 +50,12 @@ def getdashboard():
     req = urllib2.Request(url)
     response = urllib2.urlopen(req)
     data = response.read()
-    arrivals = json.loads(data)['resultSet']['arrival']
-    filtered = filterdashboarddata(arrivals)
-    return jsonify(arrivals=filtered)
+    p_arrivals = getArrivals(json.loads(data)['resultSet']['arrival'])
+    p_detours = getDetours(json.loads(data)['resultSet']['detour'])
+    p_locations = getLocations(json.loads(data)['resultSet']['location'])
+    return jsonify(arrivals=p_arrivals,detours=p_detours,locations=p_locations)
 
-def filterdashboarddata(arrivals):
+def getArrivals(arrivals):
     filtered = dict()
     for arrival in arrivals:
         locid = arrival['locid']        
@@ -62,6 +63,23 @@ def filterdashboarddata(arrivals):
             filtered[locid] = list()
         filtered[locid].append(arrival)
     return filtered
+
+def getDetours(detours):
+    processedDetours = dict()
+    for detour in detours:
+	d_id = detour['id']
+	desc = detour['desc']
+	processedDetours[d_id] = desc
+    return processedDetours
+
+
+def getLocations(locations):
+    processedLocs = dict()
+    for loc in locations:
+        l_id = loc['id']
+        desc = loc['desc']
+        processedLocs[l_id] = desc
+    return processedLocs
 
 
 
