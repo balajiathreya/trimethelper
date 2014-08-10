@@ -30,7 +30,7 @@ app.config.from_object(__name__)
 mail = Mail(app)
 
 
-DATABASE = '../resources/trimet.db'
+DATABASE = '/var/www/trimethelper/resources/trimet.db'
 
 
 @app.route('/')
@@ -64,14 +64,13 @@ def filterdashboarddata(arrivals):
 
 
 # functions for /checktrimetstatus
-#https://dev.twitter.com/docs/auth/application-only-auth
+# https://dev.twitter.com/docs/auth/application-only-auth
 @app.route("/checktrimetstatus")
 def checktrimetstatus():
     bearerToken = getBearerToken()
     authorization = 'Bearer ' + bearerToken
     headers = {'Authorization':authorization}
     url = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=trimet'
-
     req = urllib2.Request(url, None, headers)
     response = urllib2.urlopen(req)
     data = response.read()   
@@ -100,7 +99,7 @@ def checkForProblems(data):
         created_at = created_at_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('US/Pacific'))
         now = datetime.now(pytz.timezone('US/Pacific'))
         diff_seconds = (now - created_at).total_seconds()
-
+        problems.append('At '  + created_at.strftime(datefmt) +  ', ' + text)
         # difference is less than 2 hours
         if(diff_seconds < 7200):
             if(text.find('delay') != -1 or text.find('closed') != -1 or text.find('delayed') != -1 or text.find('disrupted') != -1):
