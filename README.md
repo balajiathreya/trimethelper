@@ -1,9 +1,7 @@
 trimethelper
 ==============
 
-Code for http://trimethelper.balajiathreya.com/ - a backend service server for Trimet related applications
-
-Uses Twitter API to track Trimet and sends an email whenever there is a problem.
+Uses Trimet developer API and Twitter API to track Trimet delays and arrivals in real-time -  http://trimethelper.balajiathreya.com
 
 Backend for http://trimet.balajiathreya.com
 
