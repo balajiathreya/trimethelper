@@ -53,7 +53,7 @@ def getdashboard():
     data = response.read()
     arrivals = json.loads(data)['resultSet']['arrival']
     filtered = filterdashboarddata(arrivals)
-    return jsonify(arrivals=json.dumps(filtered))
+    return jsonify(arrivals=filtered)
 
 def filterdashboarddata(arrivals):
     filtered = dict()
