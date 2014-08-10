@@ -9,7 +9,7 @@ import urllib2, base64
 import credentials, json
 import os.path
 import sqlite3
-from flask import g
+from flask import g, jsonify
 from flask.ext.cors import CORS
 
 
@@ -29,7 +29,11 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
-cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}})
+#cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}})
+#app.config['CORS_HEADERS'] = 'Content-Type'
+cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}},
+            headers="Content-Type")
+
 
 DATABASE = '/var/www/trimethelper/resources/trimet.db'
 
@@ -49,8 +53,7 @@ def getdashboard():
     data = response.read()
     arrivals = json.loads(data)['resultSet']['arrival']
     filtered = filterdashboarddata(arrivals)
-    dashboard = "{ 'arrivals':"+ json.dumps(filtered) +"}"
-    return dashboard
+    return jsonify(arrivals=json.dumps(filtered))
 
 def filterdashboarddata(arrivals):
     filtered = dict()
