@@ -29,8 +29,6 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
-#cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}})
-#app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}},
             headers="Content-Type")
 
@@ -43,6 +41,7 @@ def hello():
     return "This server is a service. Please use the right path"
 
 
+# http://developer.trimet.org/ws_docs/arrivals2_ws.shtml
 # functions for /getdashboard
 @app.route('/getdashboard')
 def getdashboard():
