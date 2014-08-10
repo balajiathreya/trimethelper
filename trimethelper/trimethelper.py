@@ -8,6 +8,8 @@ import pytz
 import urllib2, base64
 import credentials, json
 import os.path
+import sqlite3
+from flask import g
 
 
 TWITTER_APIKEY=credentials.twitterapikey
@@ -26,6 +28,9 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
+
+
+DATABASE = '../resources/trimet.db'
 
 
 @app.route('/')
@@ -71,32 +76,50 @@ def checktrimetstatus():
     response = urllib2.urlopen(req)
     data = response.read()   
     problems =  checkForProblems(data)
-    problemsStr = str('<br/>'.join(problems))
-    sendEmail(problemsStr)
-    return problemsStr
+    if(len(problems) > 0):
+        problemsStr = str('<br/>'.join(problems))
+        if(problemsNew(problemsStr)):
+            query_db('delete from TRIMET_PROBLEMS', [], one=True)
+            query_db("insert into TRIMET_PROBLEMS(PROBLEMS) values(?)" , [problemsStr], one=True)
+            sendEmail(problemsStr)
+            return problemsStr
+        return "No new problems"
+    else:
+        return "No new problems"
 
 
 def checkForProblems(data):
     tweetsJSON = json.loads(data)
     problems = []
     delayFound = False;
+    # https://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+    datefmt = '%I:%M %p'
     for tweet in tweetsJSON:
         text = tweet['text']
         created_at_utc  = pytz.utc.localize(datetime.strptime(tweet['created_at'].replace('+0000 ',''), '%a %b %d %H:%M:%S %Y'))
         created_at = created_at_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('US/Pacific'))
         now = datetime.now(pytz.timezone('US/Pacific'))
         diff_seconds = (now - created_at).total_seconds()
+
         # difference is less than 2 hours
         if(diff_seconds < 7200):
             if(text.find('delay') != -1 or text.find('closed') != -1 or text.find('delayed') != -1 or text.find('disrupted') != -1):
-                problems.append('At '  + str(created_at) +  ', ' + text)
+                problems.append('At '  + created_at.strftime(datefmt) +  ', ' + text)
     return problems;
+
+
+def problemsNew(problemsStr):
+    problemsFromDB = query_db('select PROBLEMS from TRIMET_PROBLEMS where ID = ?', [1], one=True)
+    if problemsFromDB is None:
+        return True
+    return problemsStr != problemsFromDB[0]
 
 
 def sendEmail(problemsStr):
     msg = Message("Trimet problems", sender=MAIL_USERNAME, recipients=["athreya86@gmail.com"])
     msg.html = problemsStr
     mail.send(msg)
+
 
 def getBearerToken():
     return TWITTER_BEARERTOKEN
@@ -117,7 +140,25 @@ def getBearerTokenFromTwitter():
     tokenJSON = json.loads(response.read())
     return tokenJSON['access_token']
 
+### database stuff
+def query_db(query, args=(), one=False):
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    get_db().commit()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
 
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 
 if __name__ == "__main__":
