@@ -122,7 +122,7 @@ def checkForProblems(data):
         problems.append('At '  + created_at.strftime(datefmt) +  ', ' + text)
         # difference is less than 2 hours
         if(diff_seconds < 7200):
-            if(text.find('delay') != -1 or text.find('closed') != -1 or text.find('delayed') != -1 or text.find('disrupted') != -1):
+            if(text.find('closed') != -1 or text.find('delayed') != -1 or text.find('disrupted') != -1):
                 problems.append('At '  + created_at.strftime(datefmt) +  ', ' + text)
     return problems;
 
