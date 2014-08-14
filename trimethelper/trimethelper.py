@@ -95,6 +95,7 @@ def checktrimetstatus():
     response = urllib2.urlopen(req)
     data = response.read()   
     problems =  checkForProblems(data)
+    
     if(len(problems) > 0):
         problemsStr = str('<br/>'.join(problems))
         if(problemsNew(problemsStr)):
@@ -105,6 +106,7 @@ def checktrimetstatus():
         return "No new problems"
     else:
         return "No new problems"
+    
 
 
 def checkForProblems(data):
@@ -119,7 +121,6 @@ def checkForProblems(data):
         created_at = created_at_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('US/Pacific'))
         now = datetime.now(pytz.timezone('US/Pacific'))
         diff_seconds = (now - created_at).total_seconds()
-        problems.append('At '  + created_at.strftime(datefmt) +  ', ' + text)
         # difference is less than 2 hours
         if(diff_seconds < 7200):
             if(text.find('closed') != -1 or text.find('delayed') != -1 or text.find('disrupted') != -1):
