@@ -45,7 +45,7 @@ def hello():
 # functions for /getdashboard
 @app.route('/getdashboard')
 def getdashboard():
-    locationids = '1003,1114,9978,10168,9833,9834,8381'
+    locationids = '1003,1114,9978,10168,9833,9834,8381,9818'
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
     req = urllib2.Request(url)
     response = urllib2.urlopen(req)
