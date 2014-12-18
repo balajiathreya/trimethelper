@@ -29,7 +29,7 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
-cors = CORS(app, resources={r"/getfavoritelocs": {"origins": "*"}},
+cors = CORS(app, resources={r"/*": {"origins": "*"}},
             headers="Content-Type")
 
 
@@ -55,6 +55,18 @@ def getfavoritelocs():
     p_locations = getLocations(json.loads(data)['resultSet']['location'])
     return jsonify(arrivals=p_arrivals,locations=p_locations)
 
+
+@app.route('/getnearbystops')
+def getnearbystops():
+    ll = request.args.get('ll')
+    url = 'http://developer.trimet.org/ws/v1/stops?ll=' + ll + '&json=true&appID=' + TRIMET_APPID + '&meters=500&showRouteDirs=true'
+    req = urllib2.Request(url)
+    response = urllib2.urlopen(req)
+    data = response.read()
+    p_locations = json.loads(data)['resultSet']['location']
+    return jsonify(locations=p_locations)
+
+ 
 def getArrivals(arrivals):
     filtered = dict()
     for arrival in arrivals:
