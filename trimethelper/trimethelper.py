@@ -46,11 +46,13 @@ def hello():
 
 # http://developer.trimet.org/ws_docs/arrivals2_ws.shtml
 # functions for /favoritelocs
-@app.route('/gettrimetroutes', methods=['GET', 'OPTIONS'])
-@crossdomain(origin='*')
+@app.route('/getfavoritestops')
 def getroutes():
-    #locationids = '1003,1114,9978,10168,9833,9834,8381,9818'
     locationids = request.args.get('locids')
+    return getRouteInfoFromTrimet(locationids);
+
+
+def getRouteInfoFromTrimet(locationids):
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
     req = urllib2.Request(url)
     response = urllib2.urlopen(req)
@@ -59,16 +61,18 @@ def getroutes():
     p_locations = getLocations(json.loads(data)['resultSet']['location'])
     return jsonify(arrivals=p_arrivals,locations=p_locations)
 
-
 @app.route('/getnearbystops')
 def getnearbystops():
     ll = request.args.get('ll')
-    url = 'http://developer.trimet.org/ws/v1/stops?ll=' + ll + '&json=true&appID=' + TRIMET_APPID + '&meters=500&showRouteDirs=true'
+    url = 'http://developer.trimet.org/ws/v1/stops?ll=' + ll + '&json=true&appID=' + TRIMET_APPID + '&meters=250&showRouteDirs=true'
     req = urllib2.Request(url)
     response = urllib2.urlopen(req)
     data = response.read()
     p_locations = json.loads(data)['resultSet']['location']
-    return jsonify(locations=p_locations)
+    locations = list()
+    for loc in p_locations[:10]:
+         locations.append(str(loc['locid']))
+    return getRouteInfoFromTrimet(",".join(locations));
 
  
 def getArrivals(arrivals):
