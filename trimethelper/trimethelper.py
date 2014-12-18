@@ -29,8 +29,11 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
-cors = CORS(app, resources={r"/*": {"origins": "*"}},
-            headers="Content-Type")
+
+# Set CORS options on app configuration
+app.config['CORS_ALLOW_HEADERS'] = "Content-Type"
+app.config['CORS_RESOURCES'] = {r"/*": {"origins": "*"}}
+cors = CORS(app)
 
 
 DATABASE = '/var/www/trimethelper/resources/trimet.db'
@@ -43,7 +46,8 @@ def hello():
 
 # http://developer.trimet.org/ws_docs/arrivals2_ws.shtml
 # functions for /favoritelocs
-@app.route('/getroutes')
+@app.route('/gettrimetroutes', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*')
 def getroutes():
     #locationids = '1003,1114,9978,10168,9833,9834,8381,9818'
     locationids = request.args.get('locids')
