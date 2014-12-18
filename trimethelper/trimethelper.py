@@ -11,7 +11,7 @@ import os.path
 import sqlite3
 from flask import g, jsonify
 from flask.ext.cors import CORS
-
+from flask import request
 
 TWITTER_APIKEY=credentials.twitterapikey
 TWITTER_APISECRET=credentials.twitterapisecret
@@ -29,7 +29,7 @@ MAIL_PASSWORD = credentials.MAIL_PASSWORD
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
-cors = CORS(app, resources={r"/getdashboard": {"origins": "*"}},
+cors = CORS(app, resources={r"/getfavoritelocs": {"origins": "*"}},
             headers="Content-Type")
 
 
@@ -42,10 +42,11 @@ def hello():
 
 
 # http://developer.trimet.org/ws_docs/arrivals2_ws.shtml
-# functions for /getdashboard
-@app.route('/getdashboard')
-def getdashboard():
-    locationids = '1003,1114,9978,10168,9833,9834,8381,9818'
+# functions for /favoritelocs
+@app.route('/getfavoritelocs')
+def getfavoritelocs():
+    #locationids = '1003,1114,9978,10168,9833,9834,8381,9818'
+    locationids = request.args.get('locids')
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
     req = urllib2.Request(url)
     response = urllib2.urlopen(req)
