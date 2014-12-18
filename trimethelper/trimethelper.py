@@ -51,9 +51,8 @@ def getdashboard():
     response = urllib2.urlopen(req)
     data = response.read()
     p_arrivals = getArrivals(json.loads(data)['resultSet']['arrival'])
-    p_detours = getDetours(json.loads(data)['resultSet']['detour'])
     p_locations = getLocations(json.loads(data)['resultSet']['location'])
-    return jsonify(arrivals=p_arrivals,detours=p_detours,locations=p_locations)
+    return jsonify(arrivals=p_arrivals,locations=p_locations)
 
 def getArrivals(arrivals):
     filtered = dict()
