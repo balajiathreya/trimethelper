@@ -43,8 +43,8 @@ def hello():
 
 # http://developer.trimet.org/ws_docs/arrivals2_ws.shtml
 # functions for /favoritelocs
-@app.route('/getfavoritelocs')
-def getfavoritelocs():
+@app.route('/getroutes')
+def getroutes():
     #locationids = '1003,1114,9978,10168,9833,9834,8381,9818'
     locationids = request.args.get('locids')
     url = 'http://developer.trimet.org/ws/v2/arrivals?locIDs=' + locationids + '&json=true&appID=' + TRIMET_APPID
