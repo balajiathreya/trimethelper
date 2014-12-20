@@ -2,7 +2,7 @@ from flask import Flask
 from flask.ext.mail import Mail
 from datetime import datetime
 from flask_mail import Message
-from crossdomain import crossdomain
+#from crossdomain import crossdomain
 from datetime import time
 import pytz
 import urllib2, base64
