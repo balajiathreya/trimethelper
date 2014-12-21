@@ -49,7 +49,10 @@ def hello():
 @app.route('/getfavoritestops')
 def getroutes():
     locationids = request.args.get('locids')
-    return getRouteInfoFromTrimet(locationids);
+    resp = getRouteInfoFromTrimet(locationids);
+    p_arrivals = resp['arrivals']
+    p_locations = resp['locations']
+    return jsonify(arrivals=p_arrivals, locations=p_locations )
 
 
 def getRouteInfoFromTrimet(locationids):
@@ -59,7 +62,8 @@ def getRouteInfoFromTrimet(locationids):
     data = response.read()
     p_arrivals = getArrivals(json.loads(data)['resultSet']['arrival'])
     p_locations = getLocations(json.loads(data)['resultSet']['location'])
-    return jsonify(arrivals=p_arrivals,locations=p_locations)
+    dictionary = {'arrivals':p_arrivals,'locations':p_locations};
+    return dictionary 
 
 @app.route('/getnearbystops')
 def getnearbystops():
@@ -70,9 +74,19 @@ def getnearbystops():
     data = response.read()
     p_locations = json.loads(data)['resultSet']['location']
     locations = list()
-    for loc in p_locations[:10]:
+    strloc = list()
+    dictionary = { 'arrivals' : {}, 'locations' : {} }
+    for loc in p_locations:
          locations.append(str(loc['locid']))
-    return getRouteInfoFromTrimet(",".join(locations));
+
+    for i in range(0, len(locations), 10):
+         chunk = locations[i : i + 10]
+         res = getRouteInfoFromTrimet(",".join(chunk)) 
+         dictionary['arrivals'].update(res['arrivals'])
+         dictionary['locations'].update(res['locations'])
+    
+    return jsonify(arrivals=dictionary['arrivals'], locations=dictionary['locations'] )
+
 
  
 def getArrivals(arrivals):
